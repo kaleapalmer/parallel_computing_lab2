@@ -8,37 +8,34 @@ int *prime; //array to hold prime numbers
 
 
 void get_inputs(int argc, char *argv[]);
-
+void calculate_prime();
 
 int main(int argc, char *argv[]) {
 
     //check and set the command line inputs
     get_inputs(argc, argv);
 
-    int multiple = 2;
-    printf("printing the array\n");
-   
-    for (int i = 2; i <= ((N+1)/2); i++) {
-        multiple = i;
-        printf("the mutiple is %d\n", i);
-        printf("the number in the array is %d\n", prime[i-2]);
-        if (prime[i-2] == 0) {
-            printf("continued\n");
-            continue;
-        }
-        printf("searching the array with the multiple %d\n", multiple);
-        for (int j = 0; j < N-1; j++) {
-            if ((prime[j] % multiple == 0 && prime[j] != multiple) && prime[j]!=0) {
-                prime[j] = 0;
-            }
-        }
-        multiple += 1;
-    }
+    //crosses out the multiples
+    calculate_prime();
+    
 
-    printf("the prime numbers from 2 to %d: \n", N);
+    //find the prime ranks
+    int rank = 1;
+    int difference;
+    int lastPrime = 2;
     for (int i = 0; i < (N-1); i++) {
         if (prime[i] != 0) {
-            printf("%d\n", prime[i]);
+            if (i == 0) {
+                difference = 0;
+            }
+            else {
+                difference = prime[i] - lastPrime;
+            }
+            printf("%d, ", rank);
+            printf("%d, ", prime[i]);
+            printf("%d\n", difference);
+            rank++;
+            lastPrime = prime[i];
         }
     }
 
@@ -71,5 +68,24 @@ void get_inputs(int argc, char *argv[]){
     prime = (int*)malloc((N-1) * sizeof(int));
     for (int i = 0; i < N-1; i++) {
         prime[i] = i + 2;
+    }
+}
+
+void calculate_prime() {
+    int multiple = 2;
+    for (int i = 2; i <= ((N+1)/2); i++) {
+        
+        multiple = i;
+        //if number is crossed out dont search for its multiples
+        if (prime[i-2] == 0) {
+            continue;
+        }
+
+        //search through array for multiples
+        for (int j = 0; j < N-1; j++) {
+            if ((prime[j] % multiple == 0 && prime[j] != multiple) && prime[j]!=0) {
+                prime[j] = 0;
+            }
+        }
     }
 }
