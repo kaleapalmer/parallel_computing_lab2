@@ -6,9 +6,9 @@ int N; //number
 int t; //threads
 int *prime; //array to hold prime numbers
 
-
 void get_inputs(int argc, char *argv[]);
 void calculate_prime();
+void write_file();
 
 int main(int argc, char *argv[]) {
 
@@ -18,27 +18,8 @@ int main(int argc, char *argv[]) {
     //crosses out the multiples
     calculate_prime();
     
-
-    //find the prime ranks
-    int rank = 1;
-    int difference;
-    int lastPrime = 2;
-    for (int i = 0; i < (N-1); i++) {
-        if (prime[i] != 0) {
-            if (i == 0) {
-                difference = 0;
-            }
-            else {
-                difference = prime[i] - lastPrime;
-            }
-            printf("%d, ", rank);
-            printf("%d, ", prime[i]);
-            printf("%d\n", difference);
-            rank++;
-            lastPrime = prime[i];
-        }
-    }
-
+    //print prime number array and write to file 
+    write_file();
 }
 
 void get_inputs(int argc, char *argv[]){
@@ -51,7 +32,7 @@ void get_inputs(int argc, char *argv[]){
     t = strtol(argv[2], NULL, 10);
 
     //check if N is in range
-    if (!(N > 2) || !(N <= 10000)) {
+    if (!(N > 2) || !(N <= 100000)) {
         printf("N (2 < N <= 10,000)\n");
         exit(1);
     }
@@ -62,7 +43,6 @@ void get_inputs(int argc, char *argv[]){
         exit(1);
     }
     //assign command line argument to varibles
-    printf("N is %d and t is %d\n", N, t);
 
     //allocate prime array and set numbers
     prime = (int*)malloc((N-1) * sizeof(int));
@@ -88,4 +68,34 @@ void calculate_prime() {
             }
         }
     }
+}
+
+void write_file() {
+    char output[100] = "";
+    sprintf(output, "%d.txt", N);
+    FILE *fp = fopen(output, "w");
+    if (!fp) {
+        printf("Cannot create the file %s\n", output);
+        exit(1);
+    }
+
+    //find the prime ranks
+    int rank = 1;
+    int difference;
+    int lastPrime = 2;
+    for (int i = 0; i < (N-1); i++) {
+        if (prime[i] != 0) {
+            if (i == 0) {
+                difference = 0;
+            }
+            else {
+                difference = prime[i] - lastPrime;
+            }
+            fprintf(fp, "%d, %d, %d\n", rank, prime[i], difference);
+         
+            rank++;
+            lastPrime = prime[i];
+        }
+    }
+    fclose(fp);
 }
