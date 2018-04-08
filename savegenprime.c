@@ -7,6 +7,10 @@ int N; //number
 int t; //threads
 int *prime; //array to hold prime numbers
 
+double t_start = 0.0;
+double tend = 0.0; 
+double ttaken;
+
 void get_inputs(int argc, char *argv[]);
 void calculate_prime();
 void write_file();
@@ -27,12 +31,12 @@ int main(int argc, char *argv[]) {
         //printf( "Hello, World!\n" );
     }
 
-
     //crosses out the multiples
     calculate_prime();
+
     
     //print prime number array and write to file 
-    //write_file();
+    write_file();
 }
 
 void get_inputs(int argc, char *argv[]){
@@ -64,24 +68,33 @@ void get_inputs(int argc, char *argv[]){
 }
 
 void calculate_prime() {
-    int multiple = 2;
+    t_start = omp_get_wtime(); 
 
+    int multiple;
 
+    omp_set_num_threads(t);
+
+    #  pragma omp parallel for num_threads(t)
     for (int i = 2; i <= ((N+1)/2); i++) {
         
         multiple = i;
+        
         //if number is crossed out dont search for its multiples
         if (prime[i-2] == 0) {
             continue;
         }
 
         //search through array for multiples
-        for (int j = 0; j < N-1; j++) {
-            if ((prime[j] % multiple == 0 && prime[j] != multiple) && prime[j]!=0) {
+        for (int j = multiple-1; j < N-1; j++) {
+            //printf("%d\n", prime[j]);
+            if (prime[j] % multiple == 0 && prime[j]!=0) {
                 prime[j] = 0;
             }
         }
     }
+
+    ttaken = omp_get_wtime() - t_start;
+    printf("Time take for the main part: %f\n", ttaken);
 }
 
 void write_file() {
